@@ -1,25 +1,30 @@
 version: "3.9"
+
 services:
   frontend:
     build: ./frontend
+    container_name: ecommerce-frontend
     ports:
-      - "5173:5173"
+      - "5173:80"
     depends_on:
       - backend
     environment:
       - VITE_API_URL=http://localhost:3000
+      - VITE_STRIPE_PUBLIC_KEY=pk_test_your_key_here
 
   backend:
     build: ./backend
+    container_name: ecommerce-backend
     ports:
       - "3000:3000"
     environment:
       - MONGO_URI=mongodb://mongo:27017/ecommerce
-      - STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY}
+      - STRIPE_SECRET_KEY=sk_test_your_secret
     depends_on:
       - mongo
 
   mongo:
     image: mongo:7.0
+    container_name: ecommerce-mongo
     ports:
       - "27017:27017"
