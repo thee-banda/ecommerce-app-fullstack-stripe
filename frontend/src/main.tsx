@@ -5,6 +5,7 @@ import Home from "./pages/Home";
 import Cart from "./pages/Cart";
 import Checkout from "./pages/Checkout";
 import { Navbar } from "./components/Navbar";
+import { Footer } from "./components/Footer";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
@@ -15,6 +16,8 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
         <Route path="/cart" element={<Cart />} />
         <Route path="/checkout" element={<Checkout />} />
       </Routes>
+      <Home />
+      <Footer /> 
     </BrowserRouter>
   </React.StrictMode>
 );
