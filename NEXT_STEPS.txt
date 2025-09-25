@@ -1,0 +1,35 @@
+Project status overview for new contributors
+
+General setup
+- Copy `.env.example` to `.env` in both Backend and frontend if environment variables are needed; current pages run without secrets.
+- Install dependencies with `npm install` inside `frontend` and run `npm run dev` to boot the Vite dev server.
+- Lint anytime with `npm run lint`; there are no automated tests yet.
+
+Incomplete or mocked flows by page
+- `frontend/src/pages/Home.tsx`: Landing content is static. Replace hard-coded arrays (featuredProducts, trendingCollections, testimonials, perks) with CMS or API data when available.
+- `frontend/src/pages/Shop.tsx`: Product grid uses static data and in-memory filters. Hook up to catalog API, add loading/error UI, and wire "View details" to a real PDP route. Persist chosen filters (query params or local storage) if desired.
+- `frontend/src/pages/Cart.tsx`: Cart items are static. Connect to shared cart state/API, implement quantity edits, move-to-saved, and remove actions. Replace shipping/tax estimates with calculated values.
+- `frontend/src/pages/Checkout.tsx`: Placeholder component. Build the actual checkout form (shipping, billing, payment) and integrate with Stripe/Backend once available.
+- `frontend/src/pages/Login.tsx`: Form is client-side only. Swap timeout mock for real auth call, surface server errors, and redirect using authenticated user state.
+- `frontend/src/pages/Signup.tsx`: Validation runs locally. Send form data to auth service, handle error states, and transition to post-signup experience (auto-login or login redirect).
+- Missing product detail route: `/product/:id` links are placeholders. Create the page before launching the Shop grid.
+- Consider adding `/auth/forgot-password` and other auth flows referenced by links.
+
+Shared components
+- `frontend/src/components/Navbar.tsx`: `navLinks` and search callback expect real data. Provide `onSearchSubmit`, cart count, and auth state from global store. Replace placeholder routes (Shop, Collections, Deals, Contact) when implemented.
+- `frontend/src/components/Footer.tsx`: Newsletter submit handler is optional but currently no-ops. Connect to email marketing service when ready; update socials and column links if URLs change.
+- `frontend/src/components/Layout.tsx`: Acts as shell only. If some pages require footer-less layout or different backgrounds, extend props or add route-level configuration.
+
+State management & integration
+- Introduce a shared state solution (React Context, Zustand, Redux, etc.) or hooks to distribute cart/auth data to Navbar, Cart, Checkout, and future pages.
+- Coordinate with Backend service contracts (Stripe checkout session, product catalog, auth) before wiring live data.
+
+Testing & QA
+- Add component tests for forms (Login/Signup) and flows (Cart actions, Shop filters).
+- Introduce end-to-end coverage (Playwright/Cypress) for primary journeys once APIs are stable.
+
+Release readiness checklist
+- Real data wired for navigation targets (`/shop`, `/cart`, `/checkout`, `/auth/*`, product detail).
+- Form submissions integrate with backend/auth services.
+- Visual/UX review across breakpoints for Shop and Cart grids.
+- Accessibility review: focus states, ARIA roles, and keyboard support on filters and forms.
