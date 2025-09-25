@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom"
+import { demoCartItems, demoProducts, type CartSeed } from "../data/products"
 
 type CartItem = {
   id: number
@@ -9,7 +10,7 @@ type CartItem = {
   color: string
   size: string
   leadTime: string
-  status: "in-stock" | "low-stock" | "backorder"
+  status: CartSeed["status"]
 }
 
 type FulfillmentHighlight = {
@@ -26,42 +27,28 @@ type Recommendation = {
   imageAlt: string
 }
 
-// Static demo data keeps the Cart page informative without relying on an API yet.
-const cartItems: CartItem[] = [
-  {
-    id: 1,
-    name: "Everyday Leather Tote",
-    description: "Structured carryall handcrafted in Italian leather.",
-    price: 220,
-    quantity: 1,
-    color: "Cognac",
-    size: "One size",
-    leadTime: "Arrives in 3-5 business days",
-    status: "in-stock",
-  },
-  {
-    id: 2,
-    name: "CloudSoft Hoodie",
-    description: "Ultra-soft fleece with a brushed interior for easy layering.",
-    price: 96,
-    quantity: 2,
-    color: "Warm Sand",
-    size: "M",
-    leadTime: "Arrives in 2-4 business days",
-    status: "low-stock",
-  },
-  {
-    id: 3,
-    name: "Minimalist Watch",
-    description: "Brushed steel case with a vegetable-tanned leather strap.",
-    price: 185,
-    quantity: 1,
-    color: "Silver / Tan",
-    size: "40 mm",
-    leadTime: "Ships tomorrow",
-    status: "in-stock",
-  },
-]
+// Demo data comes from the shared product catalog until the live cart API is connected.
+const cartItems: CartItem[] = demoCartItems
+  .map((item) => {
+    const product = demoProducts.find((product) => product.id === item.productId)
+
+    if (!product) {
+      return null
+    }
+
+    return {
+      id: product.id,
+      name: product.name,
+      description: product.description,
+      price: product.price,
+      quantity: item.quantity,
+      color: item.color,
+      size: item.size,
+      leadTime: item.leadTime,
+      status: item.status,
+    }
+  })
+  .filter((item): item is CartItem => item !== null)
 
 const fulfillmentHighlights: FulfillmentHighlight[] = [
   {
@@ -306,3 +293,4 @@ const Cart = () => {
 }
 
 export default Cart
+
