@@ -1,0 +1,4 @@
+Next Steps                                                                                                                                                                                               
+                                                                                                                                                                                                           
+  1. Connect the signup handler to your auth API and replace the timeout with the real request.                                                                                                            
+  2. Feed any post-signup success state into the login page or dashboard once backend integration is ready.
