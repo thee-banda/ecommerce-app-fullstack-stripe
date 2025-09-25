@@ -1,11 +1,5 @@
 import { Link } from "react-router-dom"
-
-type Product = {
-  id: number
-  name: string
-  price: string
-  imageAlt: string
-}
+import { demoProducts, featuredProductIds } from "../data/products"
 
 type Collection = {
   id: number
@@ -21,12 +15,27 @@ type Testimonial = {
   role: string
 }
 
-const featuredProducts: Product[] = [
-  { id: 1, name: "Everyday Leather Tote", price: "$220", imageAlt: "Brown leather tote bag on white background" },
-  { id: 2, name: "CloudSoft Hoodie", price: "$96", imageAlt: "Soft beige hoodie folded neatly" },
-  { id: 3, name: "Minimalist Watch", price: "$185", imageAlt: "Brushed steel watch resting on marble" },
-  { id: 4, name: "Stacked Ring Set", price: "$48", imageAlt: "Gold stacking rings displayed together" },
-]
+type FeaturedProductCard = {
+  id: number
+  name: string
+  price: string
+  imageAlt: string
+}
+
+const currencyFormatter = new Intl.NumberFormat("en-US", {
+  style: "currency",
+  currency: "USD",
+})
+
+const featuredProducts: FeaturedProductCard[] = featuredProductIds
+  .map((id) => demoProducts.find((product) => product.id === id))
+  .filter((product): product is NonNullable<typeof product> => Boolean(product))
+  .map((product) => ({
+    id: product.id,
+    name: product.name,
+    price: currencyFormatter.format(product.price),
+    imageAlt: product.imageAlt,
+  }))
 
 const trendingCollections: Collection[] = [
   { id: 1, name: "Fall Layers", description: "Warm textures, earthy palettes.", imageAlt: "Model wearing layered fall outfit" },
@@ -230,3 +239,4 @@ const Home = () => {
 }
 
 export default Home
+
