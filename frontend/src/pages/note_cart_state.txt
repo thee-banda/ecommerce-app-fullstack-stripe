@@ -1,0 +1,5 @@
+Next Steps                                                                                                                                                                                               
+                                                                                                                                                                                                          
+  1. Replace static datasets with cart state from your store or API.                                                                                                                                       
+  2. Hook up quantity change, move-to-saved, and remove actions to that data layer.                                                                                                                        
+  3. Capture the flow with integration or visual tests once cart interactions are wired up.
