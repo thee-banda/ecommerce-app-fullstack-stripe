@@ -1,114 +1,24 @@
 import { useMemo, useState } from "react"
 import { Link } from "react-router-dom"
 import { demoProducts } from "../data/products"
-
-type Category = {
-  id: string
-  label: string
-  description: string
-}
-
-type ServiceHighlight = {
-  id: number
-  title: string
-  description: string
-}
-
-type EditorialStory = {
-  id: number
-  title: string
-  excerpt: string
-  href: string
-}
-
-const categories: Category[] = [
-  { id: "all", label: "All styles", description: "Browse every capsule in one place." },
-  { id: "outerwear", label: "Outerwear", description: "Layer-ready trenches, puffers, and vests." },
-  { id: "bags", label: "Bags", description: "Carryalls crafted for daily movement." },
-  { id: "dresses", label: "Dresses", description: "Easy silhouettes with a refined finish." },
-  { id: "essentials", label: "Essentials", description: "Everyday foundations for clean styling." },
-  { id: "travel", label: "Travel", description: "Weekender gear built for light packing." },
-  { id: "accessories", label: "Accessories", description: "Complete your look with subtle layers." },
-  { id: "sweaters", label: "Sweaters", description: "Supersoft knits for transitional weather." },
-]
-
-const colorOptions = [
-  "All",
-  "Cognac",
-  "Black",
-  "Fog",
-  "Coal",
-  "Steel",
-  "Tan",
-  "Stone",
-  "Olive",
-  "Jet",
-  "Pearl",
-  "Umber",
-  "Charcoal",
-  "Ivory",
-  "Sable",
-  "Midnight",
-  "Alpine",
-  "Sand",
-  "Slate",
-]
-
-const sortOptions = [
-  { value: "featured", label: "Featured" },
-  { value: "price-low", label: "Price: Low to High" },
-  { value: "price-high", label: "Price: High to Low" },
-  { value: "newest", label: "Newest arrivals" },
-  { value: "rating", label: "Top rated" },
-]
-
-const serviceHighlights: ServiceHighlight[] = [
-  {
-    id: 1,
-    title: "Complimentary alterations",
-    description: "Visit any Studio to tailor outerwear and dresses to your perfect fit.",
-  },
-  {
-    id: 2,
-    title: "Express carbon-neutral delivery",
-    description: "All orders ship in recyclable packaging with tracked updates to your inbox.",
-  },
-  {
-    id: 3,
-    title: "Personal styling sessions",
-    description: "Book a 30-minute virtual styling consult to maximize each capsule purchase.",
-  },
-]
-
-const editorialStories: EditorialStory[] = [
-  {
-    id: 1,
-    title: "How to build a carry-on capsule",
-    excerpt: "Our design team shares four looks that style the same weekender kit.",
-    href: "/editorial/carry-on-capsule",
-  },
-  {
-    id: 2,
-    title: "Fabric spotlight: Recycled cashmere blend",
-    excerpt: "Meet the upgraded knit story sourced from small-batch mills in Italy.",
-    href: "/editorial/cashmere-blend",
-  },
-]
-
-const currencyFormatter = new Intl.NumberFormat("en-US", {
-  style: "currency",
-  currency: "USD",
-})
+import { useLocale } from "../context/LocaleContext"
 
 const Shop = () => {
-  const [activeCategory, setActiveCategory] = useState<string>("all")
-  const [selectedColor, setSelectedColor] = useState<string>("All")
-  const [sortBy, setSortBy] = useState<string>("featured")
+  const { formatCurrency, locale } = useLocale()
+  const shopMessages = locale.messages.shop
+
+  const defaultCategoryId = shopMessages.categories[0]?.id ?? "all"
+  const defaultColorValue = shopMessages.colorOptions[0]?.value ?? "*"
+  const defaultSortValue = shopMessages.sortOptions[0]?.value ?? "featured"
+
+  const [activeCategory, setActiveCategory] = useState<string>(defaultCategoryId)
+  const [selectedColor, setSelectedColor] = useState<string>(defaultColorValue)
+  const [sortBy, setSortBy] = useState<string>(defaultSortValue)
 
   const filteredProducts = useMemo(() => {
     return demoProducts.filter((product) => {
       const matchesCategory = activeCategory === "all" ? true : product.category === activeCategory
-      const matchesColor = selectedColor === "All" ? true : product.colors.includes(selectedColor)
+      const matchesColor = selectedColor === "*" ? true : product.colors.includes(selectedColor)
       return matchesCategory && matchesColor
     })
   }, [activeCategory, selectedColor])
@@ -129,12 +39,19 @@ const Shop = () => {
     }
   }, [filteredProducts, sortBy])
 
-  const activeCategoryMeta = categories.find((category) => category.id === activeCategory) ?? categories[0]
+  const activeCategoryMeta =
+    shopMessages.categories.find((category) => category.id === activeCategory) ?? shopMessages.categories[0]
 
   const handleResetFilters = () => {
-    setActiveCategory("all")
-    setSelectedColor("All")
-    setSortBy("featured")
+    setActiveCategory(defaultCategoryId)
+    setSelectedColor(defaultColorValue)
+    setSortBy(defaultSortValue)
+  }
+
+  const transformColorNames = (colors: string[]) => {
+    return colors
+      .map((color) => shopMessages.colorOptions.find((option) => option.value === color)?.label ?? color)
+      .join(", ")
   }
 
   return (
@@ -143,31 +60,30 @@ const Shop = () => {
         <header className="grid gap-10 lg:grid-cols-[minmax(0,_1.3fr)_minmax(0,_1fr)] lg:items-center">
           <div className="space-y-6">
             <span className="inline-flex items-center rounded-full bg-slate-200 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-slate-600">
-              Fall arrivals
+              {shopMessages.heroBadge}
             </span>
             <h1 className="text-4xl font-semibold tracking-tight text-slate-900 sm:text-5xl">
-              Shop the essentials built to move with you
+              {shopMessages.heroTitle}
             </h1>
-            <p className="max-w-2xl text-sm text-slate-600">
-              Discover modular layers, refined accessories, and versatile silhouettes designed for long-term wear. Filter by category or color to curate the perfect capsule.
-            </p>
+            <p className="max-w-2xl text-sm text-slate-600">{shopMessages.heroDescription}</p>
             <div className="flex flex-wrap gap-3 text-sm text-slate-600">
-              <div className="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 shadow-sm ring-1 ring-slate-200/60">
-                <span className="h-2 w-2 rounded-full bg-emerald-500" aria-hidden />
-                <span>New drops every Thursday</span>
-              </div>
-              <div className="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 shadow-sm ring-1 ring-slate-200/60">
-                <span className="h-2 w-2 rounded-full bg-slate-900" aria-hidden />
-                <span>Free exchanges within 30 days</span>
-              </div>
+              {shopMessages.heroCallouts.map((callout, index) => (
+                <div
+                  key={`${callout}-${index}`}
+                  className="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 shadow-sm ring-1 ring-slate-200/60"
+                >
+                  <span className="h-2 w-2 rounded-full bg-emerald-500" aria-hidden />
+                  <span>{callout}</span>
+                </div>
+              ))}
             </div>
           </div>
 
           <div className="rounded-3xl bg-white p-6 shadow-lg ring-1 ring-slate-200/80">
             <div className="aspect-video w-full rounded-2xl bg-slate-200" aria-hidden />
             <div className="mt-4 space-y-2 text-sm text-slate-600">
-              <p className="font-medium text-slate-900">Curated by our design team</p>
-              <p>Every look is built with recycled fibers and traceable manufacturing partners.</p>
+              <p className="font-medium text-slate-900">{shopMessages.heroCardTitle}</p>
+              <p>{shopMessages.heroCardDescription}</p>
             </div>
           </div>
         </header>
@@ -175,11 +91,11 @@ const Shop = () => {
         <section className="space-y-6">
           <div className="flex flex-col gap-4 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-200/60 lg:flex-row lg:items-center lg:justify-between">
             <div className="space-y-2">
-              <h2 className="text-base font-semibold text-slate-900">Shop by category</h2>
+              <h2 className="text-base font-semibold text-slate-900">{shopMessages.categoryHeading}</h2>
               <p className="text-sm text-slate-500">{activeCategoryMeta.description}</p>
             </div>
             <div className="flex flex-wrap gap-2">
-              {categories.map((category) => (
+              {shopMessages.categories.map((category) => (
                 <button
                   key={category.id}
                   type="button"
@@ -198,25 +114,25 @@ const Shop = () => {
 
           <div className="flex flex-col gap-4 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-200/60 lg:flex-row lg:items-center lg:justify-between">
             <div className="flex flex-wrap items-center gap-3">
-              <p className="text-sm font-semibold text-slate-900">Color focus</p>
-              {colorOptions.map((color) => (
+              <p className="text-sm font-semibold text-slate-900">{shopMessages.colorLabel}</p>
+              {shopMessages.colorOptions.map((color) => (
                 <button
-                  key={color}
+                  key={color.value}
                   type="button"
-                  onClick={() => setSelectedColor(color)}
+                  onClick={() => setSelectedColor(color.value)}
                   className={`inline-flex items-center rounded-full px-3 py-1.5 text-xs font-medium transition ${
-                    selectedColor === color
+                    selectedColor === color.value
                       ? "bg-slate-900 text-white"
                       : "bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-slate-900"
                   }`}
                 >
-                  {color}
+                  {color.label}
                 </button>
               ))}
             </div>
             <div className="flex flex-wrap items-center gap-3 text-sm">
               <label className="text-slate-500" htmlFor="sort">
-                Sort
+                {shopMessages.sortLabel}
               </label>
               <select
                 id="sort"
@@ -224,7 +140,7 @@ const Shop = () => {
                 onChange={(event) => setSortBy(event.target.value)}
                 className="rounded-md border border-slate-200 px-3 py-2 text-sm text-slate-700 outline-none transition focus:border-slate-400 focus:ring-2 focus:ring-slate-200"
               >
-                {sortOptions.map((option) => (
+                {shopMessages.sortOptions.map((option) => (
                   <option key={option.value} value={option.value}>
                     {option.label}
                   </option>
@@ -235,7 +151,7 @@ const Shop = () => {
                 onClick={handleResetFilters}
                 className="rounded-md px-3 py-2 text-sm font-medium text-slate-500 transition hover:text-slate-900"
               >
-                Reset
+                {shopMessages.resetLabel}
               </button>
             </div>
           </div>
@@ -243,106 +159,113 @@ const Shop = () => {
 
         <section className="space-y-4">
           <div className="flex flex-wrap items-center justify-between gap-3">
-            <h2 className="text-base font-semibold text-slate-900">{sortedProducts.length} styles available</h2>
-            <p className="text-sm text-slate-500">
-              Showing capsule picks that keep their shape and color after 50+ wears.
-            </p>
+            <h2 className="text-base font-semibold text-slate-900">
+              {sortedProducts.length} {shopMessages.stylesAvailableLabel}
+            </h2>
+            <p className="text-sm text-slate-500">{shopMessages.stylesDescription}</p>
           </div>
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {sortedProducts.map((product) => (
-              <article key={product.id} className="flex flex-col justify-between rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-200/60">
-                <div>
-                  <div className="relative">
-                    <div className="aspect-square w-full rounded-xl bg-slate-200" aria-hidden />
-                    {product.isNew && (
-                      <span className="absolute left-4 top-4 inline-flex items-center rounded-full bg-emerald-500 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-white">
-                        New
-                      </span>
-                    )}
-                  </div>
-                  <div className="mt-5 space-y-2">
-                    <h3 className="text-base font-semibold text-slate-900">{product.name}</h3>
-                    <p className="text-sm text-slate-500">{product.description}</p>
-                    <div className="flex items-center gap-2 text-xs font-medium uppercase tracking-wide text-slate-400">
-                      <span>{product.category}</span>
-                      <span className="h-1 w-1 rounded-full bg-slate-300" aria-hidden />
-                      <span>{product.colors.join(", ")}</span>
+            {sortedProducts.map((product) => {
+              const categoryLabel =
+                shopMessages.categories.find((category) => category.id === product.category)?.label ?? product.category
+              const localizedColors = transformColorNames(product.colors)
+
+              return (
+                <article key={product.id} className="flex flex-col justify-between rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-200/60">
+                  <div>
+                    <div className="relative">
+                      <div className="aspect-square w-full rounded-xl bg-slate-200" aria-hidden />
+                      {product.isNew && (
+                        <span className="absolute left-4 top-4 inline-flex items-center rounded-full bg-emerald-500 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-white">
+                          {shopMessages.newBadge}
+                        </span>
+                      )}
+                    </div>
+                    <div className="mt-5 space-y-2">
+                      <h3 className="text-base font-semibold text-slate-900">{product.name}</h3>
+                      <p className="text-sm text-slate-500">{product.description}</p>
+                      <div className="flex items-center gap-2 text-xs font-medium uppercase tracking-wide text-slate-400">
+                        <span>{categoryLabel}</span>
+                        <span className="h-1 w-1 rounded-full bg-slate-300" aria-hidden />
+                        <span>{localizedColors}</span>
+                      </div>
                     </div>
                   </div>
-                </div>
-                <div className="mt-5 flex items-end justify-between">
-                  <div>
-                    <p className="text-lg font-semibold text-slate-900">{currencyFormatter.format(product.price)}</p>
-                    <p className="text-xs text-slate-500">
-                      {product.rating.toFixed(1)} rating | {product.reviews} reviews
-                    </p>
+                  <div className="mt-5 flex items-end justify-between">
+                    <div>
+                      <p className="text-lg font-semibold text-slate-900">{formatCurrency(product.price)}</p>
+                      <p className="text-xs text-slate-500">
+                        {shopMessages.ratingSummary(product.rating, product.reviews)}
+                      </p>
+                    </div>
+                    <Link
+                      to={`/product/${product.id}`}
+                      className="inline-flex items-center justify-center rounded-md bg-slate-900 px-4 py-2 text-sm font-medium text-white transition hover:bg-slate-700"
+                    >
+                      {shopMessages.viewDetails}
+                    </Link>
                   </div>
-                  <Link
-                    to={`/product/${product.id}`}
-                    className="inline-flex items-center justify-center rounded-md bg-slate-900 px-4 py-2 text-sm font-medium text-white transition hover:bg-slate-700"
-                  >
-                    View details
-                  </Link>
-                </div>
-              </article>
-            ))}
+                </article>
+              )
+            })}
           </div>
         </section>
 
         <section className="rounded-3xl bg-slate-900 p-10 text-white shadow-lg">
           <div className="grid gap-8 lg:grid-cols-[minmax(0,_1.2fr)_minmax(0,_1fr)] lg:items-center">
             <div className="space-y-5">
-              <h2 className="text-3xl font-semibold tracking-tight">Reserve the looks you love</h2>
-              <p className="text-sm text-slate-300">
-                Join ShopSphere Reserve to unlock 24-hour early access on drops, members-only pricing, and complimentary express shipping on every order.
-              </p>
+              <h2 className="text-3xl font-semibold tracking-tight">{shopMessages.reserveHeading}</h2>
+              <p className="text-sm text-slate-300">{shopMessages.reserveDescription}</p>
               <div className="flex flex-wrap gap-3">
                 <Link
                   to="/membership"
                   className="inline-flex items-center justify-center rounded-md bg-white px-5 py-3 text-sm font-medium text-slate-900 transition hover:bg-slate-200"
                 >
-                  Become a member
+                  {shopMessages.reservePrimaryCta}
                 </Link>
                 <Link
                   to="/collections"
                   className="inline-flex items-center justify-center rounded-md border border-white/30 px-5 py-3 text-sm font-medium text-white transition hover:border-white"
                 >
-                  Explore collections
+                  {shopMessages.reserveSecondaryCta}
                 </Link>
               </div>
             </div>
             <div className="rounded-2xl bg-white/10 p-6">
-              <h3 className="text-base font-semibold">Member perks</h3>
+              <h3 className="text-base font-semibold">{shopMessages.reservePerksTitle}</h3>
               <ul className="mt-4 space-y-3 text-sm text-slate-200">
-                <li>- Early access to weekly capsules</li>
-                <li>- Dedicated stylist hotline</li>
-                <li>- Extended returns and instant credit</li>
+                {shopMessages.reservePerks.map((perk, index) => (
+                  <li key={`${perk}-${index}`}>- {perk}</li>
+                ))}
               </ul>
             </div>
           </div>
         </section>
 
-        <section className="grid gap-6 lg:grid-cols-3">
-          {serviceHighlights.map((highlight) => (
-            <div key={highlight.id} className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-200/60">
-              <h3 className="text-base font-semibold text-slate-900">{highlight.title}</h3>
-              <p className="mt-2 text-sm text-slate-500">{highlight.description}</p>
-            </div>
-          ))}
+        <section className="space-y-4">
+          <h2 className="text-xl font-semibold text-slate-900">{shopMessages.serviceHighlightsHeading}</h2>
+          <div className="grid gap-6 lg:grid-cols-3">
+            {shopMessages.serviceHighlights.map((highlight) => (
+              <div key={highlight.id} className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-200/60">
+                <h3 className="text-base font-semibold text-slate-900">{highlight.title}</h3>
+                <p className="mt-2 text-sm text-slate-500">{highlight.description}</p>
+              </div>
+            ))}
+          </div>
         </section>
 
         <section className="space-y-6">
           <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
             <div>
-              <h2 className="text-xl font-semibold text-slate-900">Style stories</h2>
-              <p className="text-sm text-slate-500">Insights from our team to keep your wardrobe in rotation.</p>
+              <h2 className="text-xl font-semibold text-slate-900">{shopMessages.storiesHeading}</h2>
+              <p className="text-sm text-slate-500">{shopMessages.storiesDescription}</p>
             </div>
             <Link to="/editorial" className="text-sm font-medium text-slate-700 transition hover:text-slate-900">
-              View all stories
+              {shopMessages.storiesCta}
             </Link>
           </div>
           <div className="grid gap-6 sm:grid-cols-2">
-            {editorialStories.map((story) => (
+            {shopMessages.editorialStories.map((story) => (
               <article key={story.id} className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-200/60">
                 <div className="aspect-video w-full rounded-xl bg-slate-200" aria-hidden />
                 <div className="mt-4 space-y-2">
@@ -353,7 +276,7 @@ const Shop = () => {
                   to={story.href}
                   className="mt-4 inline-flex text-sm font-medium text-slate-700 transition hover:text-slate-900"
                 >
-                  Read the story
+                  {shopMessages.storiesReadMore}
                 </Link>
               </article>
             ))}
@@ -365,4 +288,3 @@ const Shop = () => {
 }
 
 export default Shop
-
