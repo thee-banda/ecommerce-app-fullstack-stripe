@@ -1,5 +1,6 @@
-import { type FormEvent, useState } from "react"
+import { type ChangeEvent, type FormEvent, useState } from "react"
 import { Link } from "react-router-dom"
+import { useLocale, type LocaleId } from "../context/LocaleContext"
 import '../index.css'
 
 export type NavLinkItem = {
@@ -48,6 +49,13 @@ export const Navbar = ({
 
   const displayedCartCount = cartItemCount > 99 ? "99+" : cartItemCount.toString()
 
+  const { locale, localeId, options, setLocaleId } = useLocale()
+  const { navbar: navbarMessages } = locale.messages
+
+  const handleLocaleChange = (event: ChangeEvent<HTMLSelectElement>) => {
+    setLocaleId(event.target.value as LocaleId)
+  }
+
   return (
     <header className="sticky top-0 z-40 bg-white shadow-sm">
       <nav className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
@@ -94,6 +102,28 @@ export const Navbar = ({
         </form>
 
         <div className="flex items-center gap-4">
+          <div className="hidden min-w-[150px] flex-col gap-1 text-left sm:flex">
+            <span className="text-[11px] font-semibold uppercase tracking-wide text-slate-400">
+              {navbarMessages.regionLabel}
+            </span>
+            <div className="relative">
+              <label htmlFor="navbar-locale" className="sr-only">
+                {navbarMessages.selectorAriaLabel}
+              </label>
+              <select
+                id="navbar-locale"
+                value={localeId}
+                onChange={handleLocaleChange}
+                className="w-full appearance-none rounded-md border border-slate-200 px-3 py-2 text-sm font-medium text-slate-700 outline-none transition focus:border-slate-400 focus:ring-2 focus:ring-slate-200"
+              >
+                {options.map((option) => (
+                  <option key={option.id} value={option.id}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
           <Link
             to="/cart"
             className="relative inline-flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-100 hover:text-slate-900"
@@ -161,6 +191,24 @@ export const Navbar = ({
                 Go
               </button>
             </form>
+
+            <div className="mt-4 sm:hidden">
+              <label htmlFor="navbar-locale-mobile" className="block text-xs font-semibold uppercase tracking-wide text-slate-500">
+                {navbarMessages.regionLabel}
+              </label>
+              <select
+                id="navbar-locale-mobile"
+                value={localeId}
+                onChange={handleLocaleChange}
+                className="mt-1 w-full rounded-md border border-slate-200 px-3 py-2 text-sm font-medium text-slate-700 outline-none transition focus:border-slate-400 focus:ring-2 focus:ring-slate-200"
+              >
+                {options.map((option) => (
+                  <option key={option.id} value={option.id}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            </div>
 
             <div className="flex flex-col space-y-1">
               {navLinks.map(({ label, href }) => (
