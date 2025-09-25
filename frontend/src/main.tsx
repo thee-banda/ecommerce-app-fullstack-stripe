@@ -6,6 +6,7 @@ import Cart from "./pages/Cart"
 import Checkout from "./pages/Checkout"
 import Home from "./pages/Home"
 import Login from "./pages/Login"
+import Signup from "./pages/Signup"
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
@@ -16,6 +17,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
           <Route path="cart" element={<Cart />} />
           <Route path="checkout" element={<Checkout />} />
           <Route path="auth/login" element={<Login />} />
+          <Route path="auth/signup" element={<Signup />} />
         </Route>
       </Routes>
     </BrowserRouter>
