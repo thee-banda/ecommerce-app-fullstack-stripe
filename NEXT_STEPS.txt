@@ -1,4 +1,25 @@
-Project status overview for new contributors
+Summary of Incomplete Work
+- Frontend pages still rely on mock content for products, cart state, testimonials, and locale copy; wire these to live APIs or CMS data.
+- Authentication, authorization, and user session handling are unstubbed across Login, Signup, Navbar, and protected routes.
+- Checkout flow is placeholder only; Stripe payment intents/sessions, backend endpoints, and webhook handling remain to be implemented.
+- Product detail experience (`/product/:id`) and supplemental marketing routes referenced in navigation are missing.
+- Shared state management (cart totals, auth status, search) is not centralized, leaving Navbar, Cart, and Checkout disconnected.
+- Automated testing and accessibility reviews have not been started, leaving core journeys unvalidated.
+
+Setup Steps After Cloning
+1. git clone <your-fork-url>
+2. cd ecommerce-app-fullstack-stripe
+3. Copy the sample environment file: `cp .env.example Backend/.env` and `cp .env.example frontend/.env`
+4. Install dependencies in both apps:
+   - `cd frontend && npm install`
+   - `cd ../Backend && npm install`
+5. Start local development servers:
+   - Frontend: `npm run dev` inside `frontend`
+   - Backend: `npm run dev` inside `Backend`
+6. Update environment variables with real MongoDB and Stripe credentials before connecting to production services.
+7. (Optional) Build and run containers with `docker compose up --build` once the backend service is added to the compose file.
+
+Detailed Work Items
 
 General setup
 - Copy `.env.example` to `.env` in both Backend and frontend if environment variables are needed; current pages run without secrets.
