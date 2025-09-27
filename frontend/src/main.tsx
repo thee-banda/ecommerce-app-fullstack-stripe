@@ -10,10 +10,13 @@ import Login from "./pages/Login"
 import Shop from "./pages/Shop"
 import Signup from "./pages/Signup"
 
+// Flip to the repository path when Vite builds with a relative base so Pages routing works.
+const routerBase = import.meta.env.BASE_URL === "./" ? "/ecommerce-app-fullstack-stripe" : import.meta.env.BASE_URL
+
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <LocaleProvider>
-      <BrowserRouter>
+      <BrowserRouter basename={routerBase}>
         <Routes>
           <Route element={<Layout />}>
             <Route index element={<Home />} />
